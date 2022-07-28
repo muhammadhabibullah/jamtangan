@@ -12,4 +12,5 @@ type TransactionDetail struct {
 type CustomerUseCase interface {
 	CreateTransaction(ctx context.Context, request *TransactionDetail) error
 	GetTransactionByID(ctx context.Context, id int64) (TransactionDetail, error)
+	FetchProductByBrandID(ctx context.Context, brandID int64) ([]Product, error)
 }

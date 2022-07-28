@@ -46,16 +46,14 @@ func (h *httpHandler) createTransaction(w http.ResponseWriter, r *http.Request) 
 
 func (h *httpHandler) getTransactionByID(w http.ResponseWriter, r *http.Request) {
 	transactionIDQuery, ok := r.URL.Query()["id"]
-	invalidTransactionIDErr := fmt.Errorf("invalid transaction ID")
-
 	if !ok || len(transactionIDQuery) == 0 {
-		http.Error(w, domain.NewHTTPError(invalidTransactionIDErr), http.StatusBadRequest)
+		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
 		return
 	}
 
 	transactionID, _ := strconv.ParseInt(transactionIDQuery[0], 10, 64)
 	if transactionID == 0 {
-		http.Error(w, domain.NewHTTPError(invalidTransactionIDErr), http.StatusBadRequest)
+		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
 		return
 	}
 

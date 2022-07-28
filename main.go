@@ -95,6 +95,7 @@ func main() {
 	mux.HandleFunc("/health", h.Health)
 	mux.HandleFunc("/brand", h.Brand)
 	mux.HandleFunc("/product", h.Product)
+	mux.HandleFunc("/product/brand", h.ProductBrand)
 	mux.HandleFunc("/transaction", h.Transaction)
 
 	serverHost := viper.GetString("server.host")
