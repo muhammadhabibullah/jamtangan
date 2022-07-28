@@ -8,13 +8,11 @@ import (
 
 func (r *transactionRepository) GetByID(ctx context.Context, id int64) (domain.Transaction, []domain.TransactionProduct, error) {
 	const (
-		transactionQuery = `SELECT id, total_price, created_at, updated_at, is_deleted, deleted_at
-			FROM transaction 
+		transactionQuery = `SELECT t.id, t.total_price, t.created_at, t.updated_at, t.is_deleted, t.deleted_at,
+       		tp.transaction_id, tp.product_id, tp.quantity, tp.price, tp.created_at, tp.updated_at, tp.is_deleted, tp.deleted_at
+			FROM transaction t
+			INNER JOIN transaction_product tp on t.id = tp.transaction_id
 			WHERE id = ?`
-
-		transactionProductQuery = `SELECT transaction_id, product_id, quantity, price, created_at, updated_at, is_deleted, deleted_at
-			FROM transaction_product 
-			WHERE transaction_id = ?`
 	)
 
 	rows, err := r.sqlDB.QueryContext(ctx, transactionQuery, id)
@@ -23,9 +21,14 @@ func (r *transactionRepository) GetByID(ctx context.Context, id int64) (domain.T
 	}
 	defer rows.Close()
 
-	transactions := make([]domain.Transaction, 0)
+	var (
+		transaction         domain.Transaction
+		transactionProducts = make([]domain.TransactionProduct, 0)
+	)
+
 	for rows.Next() {
-		var transaction domain.Transaction
+		var transactionProduct domain.TransactionProduct
+
 		err = rows.Scan(
 			&transaction.ID,
 			&transaction.TotalPrice,
@@ -33,29 +36,6 @@ func (r *transactionRepository) GetByID(ctx context.Context, id int64) (domain.T
 			&transaction.UpdatedAt,
 			&transaction.IsDeleted,
 			&transaction.DeletedAt,
-		)
-		if err != nil {
-			return domain.Transaction{}, nil, err
-		}
-
-		transactions = append(transactions, transaction)
-	}
-
-	if len(transactions) == 0 {
-		return domain.Transaction{}, nil, domain.ErrNotFound
-	}
-	var transaction = transactions[0]
-
-	rows, err = r.sqlDB.QueryContext(ctx, transactionProductQuery, transaction.ID)
-	if err != nil {
-		return domain.Transaction{}, nil, err
-	}
-	defer rows.Close()
-
-	transactionProducts := make([]domain.TransactionProduct, 0)
-	for rows.Next() {
-		var transactionProduct domain.TransactionProduct
-		err = rows.Scan(
 			&transactionProduct.TransactionID,
 			&transactionProduct.ProductID,
 			&transactionProduct.Quantity,

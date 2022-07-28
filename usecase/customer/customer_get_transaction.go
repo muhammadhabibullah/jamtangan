@@ -12,7 +12,7 @@ func (u *customerUseCase) GetTransactionByID(ctx context.Context, id int64) (dom
 		return domain.TransactionDetail{}, err
 	}
 	if len(transactionProducts) == 0 {
-		return domain.TransactionDetail{}, nil
+		return domain.TransactionDetail{}, domain.ErrNotFound
 	}
 
 	transactionDetail := domain.TransactionDetail{
