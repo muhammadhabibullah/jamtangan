@@ -1,0 +1,14 @@
+{
+  "debug": true,
+  "server": {
+    "host": "localhost",
+    "port": "8000"
+  },
+  "sql": {
+    "host": "localhost",
+    "port": "3306",
+    "user": "root",
+    "password": "password",
+    "db_name": "jamtangan"
+  }
+}

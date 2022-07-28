@@ -1,0 +1,22 @@
+version: "3.9"
+
+networks:
+  jamtangan:
+    name: jamtangan
+    driver: bridge
+
+services:
+  mysql:
+    image: mariadb:10.6.8
+    container_name: jamtangan-mysql
+    networks:
+      - jamtangan
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: jamtangan
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
