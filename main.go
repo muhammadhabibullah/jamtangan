@@ -38,8 +38,8 @@ func main() {
 		log.Println("DEBUG mode")
 	}
 
-	snowflakeNode := viper.GetInt64("snowflake.node")
-	snowflake, err := snowflake.NewNode(snowflakeNode)
+	snowflakeNodeCfg := viper.GetInt64("snowflake.node")
+	snowflakeNode, err := snowflake.NewNode(snowflakeNodeCfg)
 	if err != nil {
 		panic(err)
 	}
@@ -82,9 +82,9 @@ func main() {
 		return
 	}
 
-	brandRepository := brand.NewRepository(sqlDB, snowflake)
-	productRepository := product.NewRepository(sqlDB, snowflake)
-	transactionRepository := transaction.NewRepository(sqlDB, snowflake)
+	brandRepository := brand.NewRepository(sqlDB, snowflakeNode)
+	productRepository := product.NewRepository(sqlDB, snowflakeNode)
+	transactionRepository := transaction.NewRepository(sqlDB, snowflakeNode)
 
 	adminUseCase := admin.NewUseCase(brandRepository, productRepository)
 	customerUseCase := customer.NewUseCase(productRepository, transactionRepository)
