@@ -42,14 +42,26 @@ func (r *transactionRepository) Create(
 		return err
 	}
 
-	_, err = tx.ExecContext(ctx, transactionQuery, transaction.ID, transaction.TotalPrice)
+	stmt, err := tx.PrepareContext(ctx, transactionQuery)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, transaction.ID, transaction.TotalPrice)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	stmt, err = tx.PrepareContext(ctx, transactionProductQuery)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
 	}
 
 	for _, transactionProduct := range transactionProducts {
-		_, err = tx.ExecContext(ctx, transactionProductQuery,
+		_, err = stmt.ExecContext(ctx,
 			transactionProduct.TransactionID,
 			transactionProduct.ProductID,
 			transactionProduct.Quantity,
