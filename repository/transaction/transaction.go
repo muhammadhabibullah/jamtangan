@@ -3,17 +3,17 @@ package transaction
 import (
 	"database/sql"
 
-	"github.com/bwmarrin/snowflake"
+	"jamtangan/domain"
 )
 
 type transactionRepository struct {
 	sqlDB     *sql.DB
-	snowflake *snowflake.Node
+	snowflake domain.Snowflake
 }
 
 func NewRepository(
 	sqlDB *sql.DB,
-	snowflakeNode *snowflake.Node,
+	snowflakeNode domain.Snowflake,
 ) *transactionRepository {
 	return &transactionRepository{
 		sqlDB:     sqlDB,

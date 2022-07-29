@@ -3,20 +3,20 @@ package brand
 import (
 	"database/sql"
 
-	"github.com/bwmarrin/snowflake"
+	"jamtangan/domain"
 )
 
 type brandRepository struct {
 	sqlDB     *sql.DB
-	snowflake *snowflake.Node
+	snowflake domain.Snowflake
 }
 
 func NewRepository(
 	sqlDB *sql.DB,
-	snowflakeNode *snowflake.Node,
+	snowflake domain.Snowflake,
 ) *brandRepository {
 	return &brandRepository{
 		sqlDB:     sqlDB,
-		snowflake: snowflakeNode,
+		snowflake: snowflake,
 	}
 }
