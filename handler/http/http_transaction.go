@@ -29,6 +29,11 @@ func (h *httpHandler) createTransaction(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if err = createTransaction.Validate(); err != nil {
+		http.Error(w, domain.NewHTTPError(err), http.StatusBadRequest)
+		return
+	}
+
 	err = h.customerUseCase.CreateTransaction(r.Context(), &createTransaction)
 	if err != nil {
 		if errors.Is(err, domain.ErrBadRequest) {
@@ -45,13 +50,8 @@ func (h *httpHandler) createTransaction(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *httpHandler) getTransactionByID(w http.ResponseWriter, r *http.Request) {
-	transactionIDQuery, ok := r.URL.Query()["id"]
-	if !ok || len(transactionIDQuery) == 0 {
-		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
-		return
-	}
-
-	transactionID, _ := strconv.ParseInt(transactionIDQuery[0], 10, 64)
+	transactionIDQuery := r.URL.Query().Get("id")
+	transactionID, _ := strconv.ParseInt(transactionIDQuery, 10, 64)
 	if transactionID == 0 {
 		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
 		return

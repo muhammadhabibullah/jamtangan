@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type Transaction struct {
@@ -23,6 +25,13 @@ type TransactionProduct struct {
 	UpdatedAt     time.Time  `json:"updated_at"`
 	IsDeleted     bool       `json:"is_deleted"`
 	DeletedAt     *time.Time `json:"deleted_at,omitempty"`
+}
+
+func (tp TransactionProduct) Validate() error {
+	return validation.ValidateStruct(&tp,
+		validation.Field(&tp.ProductID, validation.Required),
+		validation.Field(&tp.Quantity, validation.Required),
+	)
 }
 
 type TransactionRepository interface {

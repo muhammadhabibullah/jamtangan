@@ -26,6 +26,11 @@ func (h *httpHandler) createBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err = createBrand.Validate(); err != nil {
+		http.Error(w, domain.NewHTTPError(err), http.StatusBadRequest)
+		return
+	}
+
 	brand, err := h.adminUseCase.CreateBrand(r.Context(), createBrand.Name)
 	if err != nil {
 		if errors.Is(err, domain.ErrDuplicate) {

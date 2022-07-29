@@ -38,6 +38,11 @@ func (h *httpHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err = createProduct.Validate(); err != nil {
+		http.Error(w, domain.NewHTTPError(err), http.StatusBadRequest)
+		return
+	}
+
 	product, err := h.adminUseCase.CreateProduct(r.Context(), createProduct)
 	if err != nil {
 		if errors.Is(err, domain.ErrBadRequest) {
@@ -54,13 +59,8 @@ func (h *httpHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *httpHandler) getProductByID(w http.ResponseWriter, r *http.Request) {
-	productIDQuery, ok := r.URL.Query()["id"]
-	if !ok || len(productIDQuery) == 0 {
-		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
-		return
-	}
-
-	productID, _ := strconv.ParseInt(productIDQuery[0], 10, 64)
+	productIDQuery := r.URL.Query().Get("id")
+	productID, _ := strconv.ParseInt(productIDQuery, 10, 64)
 	if productID == 0 {
 		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
 		return
@@ -82,13 +82,8 @@ func (h *httpHandler) getProductByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *httpHandler) fetchProductByBrandID(w http.ResponseWriter, r *http.Request) {
-	brandIDQuery, ok := r.URL.Query()["id"]
-	if !ok || len(brandIDQuery) == 0 {
-		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
-		return
-	}
-
-	brandID, _ := strconv.ParseInt(brandIDQuery[0], 10, 64)
+	brandIDQuery := r.URL.Query().Get("id")
+	brandID, _ := strconv.ParseInt(brandIDQuery, 10, 64)
 	if brandID == 0 {
 		http.Error(w, domain.NewHTTPError(domain.ErrInvalidID), http.StatusBadRequest)
 		return
