@@ -36,7 +36,7 @@ func (h *httpHandler) createTransaction(w http.ResponseWriter, r *http.Request) 
 
 	err = h.customerUseCase.CreateTransaction(r.Context(), &createTransaction)
 	if err != nil {
-		if errors.Is(err, domain.ErrBadRequest) {
+		if errors.Is(err, domain.ErrNotFound) {
 			http.Error(w, domain.NewHTTPError(err), http.StatusBadRequest)
 			return
 		}
