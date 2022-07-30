@@ -14,7 +14,6 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	httpHandler "jamtangan/handler/http"
-	//_ "jamtangan/handler/http/docs"
 	"jamtangan/repository/brand"
 	"jamtangan/repository/product"
 	"jamtangan/repository/transaction"
