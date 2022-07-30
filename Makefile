@@ -5,7 +5,7 @@ config:
 	@cp -n config/config.example.json config/config.json
 
 dependency:
-	@docker-compose start
+	@docker-compose up -d
 
 migrate:
 	@go run main.go -command=migrate
