@@ -1,5 +1,7 @@
 # Jam Tangan Service
 
+[![codecov](https://codecov.io/gh/muhammadhabibullah/jamtangan/branch/master/graph/badge.svg?token=SUJXP3HX3B)](https://codecov.io/gh/muhammadhabibullah/jamtangan)
+
 ## Setup
 
 1. Setup config file on the [config](config) directory.
