@@ -1,8 +1,10 @@
 {
-  "debug": true,
   "server": {
     "host": "localhost",
     "port": "8000"
+  },
+  "snowflake": {
+    "node": 1
   },
   "sql": {
     "host": "localhost",
