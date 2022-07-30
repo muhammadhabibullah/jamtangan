@@ -11,15 +11,11 @@ func (u *customerUseCase) CreateTransaction(
 	ctx context.Context,
 	request *domain.TransactionDetail,
 ) error {
-	if len(request.TransactionProducts) == 0 {
-		return fmt.Errorf("no product to buy: %w", domain.ErrBadRequest)
-	}
-
 	var totalPrice int64
 	for i, transactionProduct := range request.TransactionProducts {
 		product, err := u.productRepository.GetByID(ctx, transactionProduct.ProductID)
 		if err != nil {
-			return err
+			return fmt.Errorf("product ID %d: %w", transactionProduct.ProductID, err)
 		}
 
 		request.TransactionProducts[i].Price = product.Price
@@ -29,5 +25,11 @@ func (u *customerUseCase) CreateTransaction(
 	request.Transaction = &domain.Transaction{
 		TotalPrice: totalPrice,
 	}
-	return u.transactionRepository.Create(ctx, request.Transaction, request.TransactionProducts)
+	err := u.transactionRepository.Create(ctx, request.Transaction, request.TransactionProducts)
+	if err != nil {
+		return err
+	}
+
+	*request, err = u.GetTransactionByID(ctx, request.Transaction.ID)
+	return err
 }
