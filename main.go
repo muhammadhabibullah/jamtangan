@@ -5,21 +5,27 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/bwmarrin/snowflake"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pressly/goose/v3"
 	"github.com/spf13/viper"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	httpHandler "jamtangan/handler/http"
+	//_ "jamtangan/handler/http/docs"
 	"jamtangan/repository/brand"
 	"jamtangan/repository/product"
 	"jamtangan/repository/transaction"
 	"jamtangan/usecase/admin"
 	"jamtangan/usecase/customer"
 )
+
+// @title Jam Tangan API
+// @version 0.1
+// @description Jam Tangan API.
+// @host localhost:8000
 
 //go:embed seed/mysql/*.sql
 var embedMySQLMigrations embed.FS
@@ -32,10 +38,6 @@ func main() {
 	viper.SetConfigFile("config/config.json")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
-	}
-
-	if viper.GetBool("debug") {
-		log.Println("DEBUG mode")
 	}
 
 	snowflakeNodeCfg := viper.GetInt64("snowflake.node")
@@ -91,16 +93,21 @@ func main() {
 
 	h := httpHandler.NewHandler(adminUseCase, customerUseCase)
 
+	serverHost := viper.GetString("server.host")
+	serverPort := viper.GetString("server.port")
+	serverAddress := fmt.Sprintf("%s:%s", serverHost, serverPort)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", h.Health)
+	mux.Handle("/", http.FileServer(http.Dir("handler/http/docs")))
+	mux.Handle("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL(fmt.Sprintf("http://%s/swagger.json", serverAddress)),
+	))
+
 	mux.HandleFunc("/brand", h.Brand)
 	mux.HandleFunc("/product", h.Product)
 	mux.HandleFunc("/product/brand", h.ProductBrand)
 	mux.HandleFunc("/transaction", h.Transaction)
-
-	serverHost := viper.GetString("server.host")
-	serverPort := viper.GetString("server.port")
-	serverAddress := fmt.Sprintf("%s:%s", serverHost, serverPort)
 
 	server := new(http.Server)
 	server.Addr = serverAddress

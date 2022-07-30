@@ -13,6 +13,6 @@ func NewHTTPError(err error) string {
 		Err: err.Error(),
 	}
 
-	httpErrorStr, _ := json.Marshal(&httpErr)
-	return string(httpErrorStr)
+	httpErrorBytes, _ := json.MarshalIndent(&httpErr, "", "    ")
+	return string(httpErrorBytes)
 }
